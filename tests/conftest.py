@@ -6,7 +6,10 @@ from unittest.mock import MagicMock
 
 # Mock the config module to avoid dependency issues during testing
 sys.modules["srt_equalizer"] = MagicMock()
-sys.modules["config"] = MagicMock(ROOT_DIR=os.getcwd())
+config_mock = MagicMock(ROOT_DIR=os.getcwd())
+config_mock.get_upload_visibility = MagicMock(return_value="unlisted")
+config_mock.get_is_for_kids = MagicMock(return_value=False)
+sys.modules["config"] = config_mock
 
 
 @pytest.fixture
