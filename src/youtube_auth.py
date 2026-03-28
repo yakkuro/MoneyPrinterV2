@@ -43,9 +43,20 @@ def load_credentials(account_uuid: str = "") -> Credentials:
 
     if not creds.valid:
         if creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-            with open(token_path, "w") as f:
-                f.write(creds.to_json())
+            try:
+                creds.refresh(Request())
+            except Exception as e:
+                raise RuntimeError(
+                    f"Failed to refresh YouTube OAuth token: {e}. "
+                    "Run `python src/auth_youtube.py` to re-authenticate."
+                ) from e
+            try:
+                with open(token_path, "w") as f:
+                    f.write(creds.to_json())
+            except OSError as e:
+                raise RuntimeError(
+                    f"Token refreshed but failed to save to {token_path}: {e}"
+                ) from e
         else:
             raise RuntimeError(
                 "YouTube OAuth token is invalid and cannot be refreshed. "

@@ -773,8 +773,19 @@ class YouTube:
         except FileNotFoundError as e:
             error(str(e))
             return False
+        except RuntimeError as e:
+            error(f"Authentication error: {e}")
+            return False
+        except HttpError as e:
+            error(
+                f"YouTube API error ({e.resp.status}): {e.content.decode('utf-8', errors='replace')}"
+            )
+            return False
+        except (ConnectionError, TimeoutError) as e:
+            error(f"Network error during upload: {e}")
+            return False
         except Exception as e:
-            error(f"Upload failed: {e}")
+            error(f"Unexpected upload error: {e}")
             return False
 
     def get_videos(self) -> List[dict]:
