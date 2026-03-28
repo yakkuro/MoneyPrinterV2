@@ -6,12 +6,20 @@ from unittest.mock import patch, MagicMock
 
 def test_get_token_path_returns_mp_directory():
     """Token file should live in .mp/ directory."""
-    with patch("youtube_auth.ROOT_DIR", "/fake/root"):
-        import youtube_auth
+    import youtube_auth
 
-        youtube_auth.ROOT_DIR = "/fake/root"
-        result = youtube_auth.get_token_path()
-        assert result == "/fake/root/.mp/youtube_oauth_token.json"
+    youtube_auth.ROOT_DIR = "/fake/root"
+    result = youtube_auth.get_token_path()
+    assert result == "/fake/root/.mp/youtube_oauth_token.json"
+
+
+def test_get_token_path_with_account_uuid():
+    """Token file should be scoped to account UUID when provided."""
+    import youtube_auth
+
+    youtube_auth.ROOT_DIR = "/fake/root"
+    result = youtube_auth.get_token_path("abc-123")
+    assert result == "/fake/root/.mp/youtube_oauth_token_abc-123.json"
 
 
 def test_load_credentials_raises_when_no_token_file(tmp_path):

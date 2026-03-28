@@ -9,12 +9,14 @@ from googleapiclient.discovery import build
 SCOPES = ["https://www.googleapis.com/auth/youtube.upload"]
 
 
-def get_token_path() -> str:
-    """Returns path to the saved OAuth token file."""
+def get_token_path(account_uuid: str = "") -> str:
+    """Returns path to the saved OAuth token file, optionally scoped to an account."""
+    if account_uuid:
+        return os.path.join(ROOT_DIR, ".mp", f"youtube_oauth_token_{account_uuid}.json")
     return os.path.join(ROOT_DIR, ".mp", "youtube_oauth_token.json")
 
 
-def load_credentials() -> Credentials:
+def load_credentials(account_uuid: str = "") -> Credentials:
     """
     Loads OAuth credentials from the saved token file.
     Refreshes the token if expired.
@@ -26,12 +28,12 @@ def load_credentials() -> Credentials:
         FileNotFoundError: If token file does not exist (initial auth needed).
         RuntimeError: If token refresh fails.
     """
-    token_path = get_token_path()
+    token_path = get_token_path(account_uuid)
 
     if not os.path.exists(token_path):
         raise FileNotFoundError(
             f"YouTube OAuth token not found at {token_path}. "
-            "Run `python src/auth_youtube.py` to authenticate."
+            "Run `python src/auth_youtube.py <account_uuid>` to authenticate."
         )
 
     with open(token_path, "r") as f:

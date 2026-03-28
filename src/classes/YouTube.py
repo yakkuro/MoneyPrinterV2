@@ -682,7 +682,7 @@ class YouTube:
         Returns:
             channel_id (str): The Channel ID.
         """
-        creds = load_credentials()
+        creds = load_credentials(self._account_uuid)
         service = build_youtube_service(creds)
         response = service.channels().list(mine=True, part="id").execute()
         items = response.get("items", [])
@@ -701,7 +701,7 @@ class YouTube:
             success (bool): Whether the upload was successful.
         """
         try:
-            creds = load_credentials()
+            creds = load_credentials(self._account_uuid)
             service = build_youtube_service(creds)
 
             body = {
@@ -712,6 +712,7 @@ class YouTube:
                 },
                 "status": {
                     "privacyStatus": get_upload_visibility(),
+                    "selfDeclaredMadeForKids": get_is_for_kids(),
                 },
             }
 

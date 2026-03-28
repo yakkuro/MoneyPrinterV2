@@ -6,7 +6,7 @@ Usage:
        ssh -L 8080:localhost:8080 user@server
 
     2. Run this script:
-       python src/auth_youtube.py
+       python src/auth_youtube.py [account_uuid]
 
     3. Open the printed URL in your local browser.
 
@@ -26,6 +26,7 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 
 
 def main():
+    account_uuid = sys.argv[1] if len(sys.argv) > 1 else ""
     credentials_path = get_google_api_credentials_path()
     if not credentials_path or not os.path.exists(credentials_path):
         print(
@@ -55,7 +56,7 @@ def main():
         success_message="Authentication successful! You can close this tab.",
     )
 
-    token_path = get_token_path()
+    token_path = get_token_path(account_uuid)
     os.makedirs(os.path.dirname(token_path), exist_ok=True)
     with open(token_path, "w") as f:
         f.write(creds.to_json())
